@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Models\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Http\Requests\UserRequest;
 
 class UserController extends Controller
 {
@@ -19,9 +20,18 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(UserRequest $request)
     {
-        //
+        $validated = $request->validated();
+
+        if (empty($validated['role'])) {
+            $validated['role'] = 'patient';
+        }
+
+        $user = User::create($validated);
+        
+        return $user;
+    
     }
 
     /**
@@ -54,4 +64,3 @@ class UserController extends Controller
         ]);
     }
 }
-
