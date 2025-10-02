@@ -21,13 +21,26 @@ class UserRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            'name'              => 'required|string|max:255',
-            'email_address'     => 'required|string|email|max:255|unique:users,email_address',
-            'phone_number'      => 'nullable|string|max:20', 
-            'id_number'         => 'nullable|string|max:50|unique:users,id_number',
-            'password'          => 'required|string|min:8|confirmed',
-            'role'              => 'nullable|in:patient,admin',
-        ];
+        if( request()->routeIs('users.store')  ) {
+            return [
+                'name'              => 'required|string|max:255',
+                'email_address'     => 'required|string|email|max:255|unique:users,email_address',
+                'phone_number'      => 'nullable|string|max:20', 
+                'id_number'         => 'nullable|string|max:50|unique:users,id_number',
+                'password'          => 'required|string|min:8|confirmed',
+                'role'              => 'nullable|in:patient,admin',
+            ];
+        }
+        else if( request()->routeIs('users.update.details') ) {
+            return [
+                'name'              => 'sometimes|required|string|max:255',
+                'email_address'     => 'sometimes|required|string|email|max:255|unique:users,email_address,' . $this->route('id') . ',user_id',
+                'phone_number'      => 'nullable|string|max:20', 
+                'id_number'         => 'nullable|string|max:50|unique:users,id_number,' . $this->route('id') . ',user_id',
+                'password'          => 'sometimes|required|string|min:8|confirmed',
+            ];
+        }
+
+        return [];
     }
 }

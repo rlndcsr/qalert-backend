@@ -30,8 +30,10 @@ class UserController extends Controller
 
         $user = User::create($validated);
         
-        return $user;
-    
+        return response()->json([
+            'message' => 'User created successfully',
+            'user' => $user
+        ]);
     }
 
     /**
@@ -46,9 +48,18 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UserRequest $request, string $id)
     {
-        //
+        $validated = $request->validated();
+
+        $user = User::findOrFail($id);
+
+        $user->update($validated);
+        
+        return response()->json([
+            'message' => 'User updated successfully',
+            'user' => $user
+        ]);
     }
 
     /**
