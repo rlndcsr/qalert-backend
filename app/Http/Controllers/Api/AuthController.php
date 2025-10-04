@@ -12,7 +12,7 @@ use Illuminate\Validation\ValidationException;
 class AuthController extends Controller
 {
     /**
-     * Login Using the specified resource.
+     * Login using the specified resource.
      */
     public function login(UserRequest $request)
     {
@@ -29,6 +29,20 @@ class AuthController extends Controller
             'token' => $user->createToken($request->email_address)->plainTextToken
         ];
     
+        return $response;
+    }
+
+     /**
+     * Logout using the specified resource.
+     */
+    public function Logout(Request $request)
+    {
+       $request->user()->tokens()->delete();
+
+       $response = [
+        'message' => 'Logged out'
+       ];
+
         return $response;
     }
 }
