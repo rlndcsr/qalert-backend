@@ -12,12 +12,12 @@ Route::get('/user', function (Request $request) {
 Route::get('/users', [UserController::class, 'index']);
 Route::get('/users/{id}', [UserController::class, 'show']);
 Route::post('/users', [UserController::class, 'store'])->name('users.store');
-Route::put('/users/{id}', [UserController::class, 'update'])->name('users.update.details');
+Route::put('/users/{id}', [UserController::class, 'update'])->name('users.update');
 Route::delete('/users/{id}', [UserController::class, 'destroy']);
 
 Route::get('/queues', [QueueEntriesController::class, 'index']);
 Route::get('/queues/{id}', [QueueEntriesController::class, 'show']);
 Route::post('/queues', [QueueEntriesController::class, 'store'])->name('queues.store');
-Route::put('/queues/status/{id}', [QueueEntriesController::class, 'updateQueueStatus'])->name('queues.status.update');
-Route::put('/queues/reason/{id}', [QueueEntriesController::class, 'updateQueueReason'])->name('queues.reason.update');
+Route::put('/queues/status/{id}', [QueueEntriesController::class, 'updateQueueStatus'])->name('queues.update.status');
+Route::put('/queues/reason/{id}', [QueueEntriesController::class, 'updateQueueReason'])->name('queues.update.reason');
 Route::delete('/queues/{id}', [QueueEntriesController::class, 'destroy']);

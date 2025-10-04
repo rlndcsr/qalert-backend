@@ -31,7 +31,7 @@ class UserRequest extends FormRequest
                 'role'              => 'nullable|in:patient,admin',
             ];
         }
-        else if( request()->routeIs('users.update.details') ) {
+        else if( request()->routeIs('users.update') ) {
             return [
                 'name'              => 'sometimes|required|string|max:255',
                 'email_address'     => 'sometimes|required|string|email|max:255|unique:users,email_address,' . $this->route('id') . ',user_id',

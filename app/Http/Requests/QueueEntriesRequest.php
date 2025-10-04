@@ -27,11 +27,11 @@ class QueueEntriesRequest extends FormRequest
               'reason'        => 'required|string|max:255',
           ];
       }
-      else if( request()->routeIs('queues.status.update') ) {
+      else if( request()->routeIs('queues.update.status') ) {
           return [
               'queue_status'  => 'sometimes|required|in:waiting,called,completed,cancelled',
           ];
-      } else if( request()->routeIs('queues.reason.update') ) {
+      } else if( request()->routeIs('queues.update.reason') ) {
           return [
               'reason'        => 'sometimes|required|string|max:255',
           ];
