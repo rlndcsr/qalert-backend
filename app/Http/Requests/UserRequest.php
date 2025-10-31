@@ -24,7 +24,7 @@ class UserRequest extends FormRequest
     {
         if( request()->routeIs('users.login')  ) {
             return [
-                'email_address'     => 'required|string|email|max:255',
+                'login'             => 'required',
                 'password'          => 'required|min:8',
             ];
         }
