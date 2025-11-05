@@ -96,8 +96,12 @@ class QueueEntriesController extends Controller
 
         $validated = $request->validate([
             'queue_status' => 'in:waiting,called,completed,cancelled',
-            'estimated_wait_time' => 'nullable|string',
+            'estimated_time_wait' => 'nullable|string',
         ]);
+
+        if (isset($validated['queue_status']) && in_array($validated['queue_status'], ['called', 'completed', 'cancelled'], true)) {
+            $validated['estimated_time_wait'] = null;
+        }
 
         $queueEntry->update($validated);
 
