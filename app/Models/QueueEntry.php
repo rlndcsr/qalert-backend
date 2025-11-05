@@ -35,6 +35,7 @@ class QueueEntry extends Model
         'queue_number',
         'reason',
         'queue_status',
+        'estimated_time_wait',
         'date',
     ];
 

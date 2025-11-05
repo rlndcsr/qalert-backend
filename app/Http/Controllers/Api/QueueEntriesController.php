@@ -58,24 +58,7 @@ class QueueEntriesController extends Controller
      */
     public function updateQueueStatus(QueueEntriesRequest $request, string $id)
     {
-         $validated = $request->validated();
-
-        $queueEntry = QueueEntry::findOrFail($id);
-
-        $queueEntry->update($validated);
-
-        return response()->json([
-            'message' => 'Queue entry updated successfully',
-            'queue_entry' => $queueEntry
-        ]);
-    }
-
-      /**
-     * Update the specified resource in storage.
-     */
-    public function updateQueueReason(QueueEntriesRequest $request, string $id)
-    {
-         $validated = $request->validated();
+        $validated = $request->validated();
 
         $queueEntry = QueueEntry::findOrFail($id);
 
@@ -88,6 +71,43 @@ class QueueEntriesController extends Controller
     }
 
     /**
+     * Update the specified resource in storage.
+     */
+    public function updateQueueReason(QueueEntriesRequest $request, string $id)
+    {
+        $validated = $request->validated();
+
+        $queueEntry = QueueEntry::findOrFail($id);
+
+        $queueEntry->update($validated);
+
+        return response()->json([
+            'message' => 'Queue entry updated successfully',
+            'queue_entry' => $queueEntry
+        ]);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function adminUpdateQueue(QueueEntriesRequest $request, string $id)
+    {
+        $queueEntry = QueueEntry::findOrFail($id);
+
+        $validated = $request->validate([
+            'queue_status' => 'in:waiting,called,completed,cancelled',
+            'estimated_wait_time' => 'nullable|string',
+        ]);
+
+        $queueEntry->update($validated);
+
+        return response()->json([
+            'message' => 'Queue entry updated successfully',
+            'queue_entry' => $queueEntry
+        ]);
+    }
+
+        /**
      * Remove the specified resource from storage.
      */
     public function destroy(string $id)

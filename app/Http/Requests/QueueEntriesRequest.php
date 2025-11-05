@@ -31,9 +31,16 @@ class QueueEntriesRequest extends FormRequest
           return [
               'queue_status'  => 'sometimes|required|in:waiting,called,completed,cancelled',
           ];
-      } else if( request()->routeIs('queues.update.reason') ) {
+      } 
+      else if( request()->routeIs('queues.update.reason') ) {
           return [
               'reason'        => 'sometimes|required|string|max:255',
+          ];
+      }
+      else if( request()->routeIs('queues.admin.update'))  {
+          return [
+              'queue_status'        => 'sometimes|in:waiting,called,completed,cancelled',
+              'estimated_wait_time' => 'sometimes|nullable|string|max:255',
           ];
       }
 

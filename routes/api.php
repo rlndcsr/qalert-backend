@@ -35,6 +35,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::post('/queues',              'store')->name('queues.store');
         Route::put('/queues/status/{id}',   'updateQueueStatus')->name('queues.update.status');
         Route::put('/queues/reason/{id}',   'updateQueueReason')->name('queues.update.reason');
+        Route::put('/queues/admin/{id}',    'adminUpdateQueue')->name('queues.admin.update');
         Route::delete('/queues/{id}',       'destroy');
     });
     
