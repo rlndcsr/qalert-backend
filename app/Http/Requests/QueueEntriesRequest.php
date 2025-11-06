@@ -25,6 +25,7 @@ class QueueEntriesRequest extends FormRequest
           return [
               'user_id'       => 'required|exists:users,user_id',
               'reason'        => 'required|string|max:255',
+              'date'          => 'nullable|date_format:Y-m-d',
           ];
       }
       else if( request()->routeIs('queues.update.status') ) {

@@ -24,7 +24,10 @@ class QueueEntriesController extends Controller
     {
         $validated = $request->validated();
 
-        $validated['date'] = now()->toDateString();
+        // Use the date from client if provided, otherwise use server's current date
+        if (!isset($validated['date'])) {
+            $validated['date'] = now()->toDateString();
+        }
 
         $validated['queue_status'] = 'waiting';
 
