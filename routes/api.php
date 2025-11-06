@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\QueueEntriesController;
 
 // Public API Routes
 Route::post('/login', [AuthController::class, 'login'])->name('users.login');
+Route::post('/adminLogin', [AuthController::class, 'adminLogin'])->name('admin.login');
 Route::post('/users', [UserController::class, 'store'])->name('users.store');
 
 

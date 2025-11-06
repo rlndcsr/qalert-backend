@@ -50,4 +50,33 @@ class AuthController extends Controller
 
         return $response;
     }
+
+    /**
+     * Admin login with email_address and password only.
+     * Returns a Sanctum token named 'adminToken'.
+     */
+    public function adminLogin(Request $request)
+    {
+        $validated = $request->validate([
+            'email_address' => ['required','email'],
+            'password' => ['required']
+        ]);
+
+        $user = User::where('email_address', $validated['email_address'])
+            ->where('role', 'admin')
+            ->first();
+
+        if (! $user || ! Hash::check($validated['password'], $user->password)) {
+            throw ValidationException::withMessages([
+                'email_address' => ['The provided credentials are incorrect.'],
+            ]);
+        }
+
+        $token = $user->createToken('adminToken')->plainTextToken;
+
+        return [
+            'user' => $user,
+            'adminToken' => $token,
+        ];
+    }
 }
