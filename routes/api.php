@@ -5,12 +5,15 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\QueueEntriesController;
+use App\Http\Controllers\SystemSettingsController;
 
 
 // Public API Routes
 Route::post('/login', [AuthController::class, 'login'])->name('users.login');
 Route::post('/adminLogin', [AuthController::class, 'adminLogin'])->name('admin.login');
 Route::post('/users', [UserController::class, 'store'])->name('users.store');
+Route::get('/system-status', [SystemSettingsController::class, 'show']);
+Route::put('/system-status', [SystemSettingsController::class, 'updateSystemStatus']);
 
 
 // Private API Routes
