@@ -30,7 +30,7 @@ class QueueEntriesRequest extends FormRequest
       }
       else if( request()->routeIs('queues.update.status') ) {
           return [
-              'queue_status'  => 'sometimes|required|in:waiting,called,completed,cancelled',
+              'queue_status'  => 'sometimes|required|in:waiting,called,now_serving,completed,cancelled',
           ];
       } 
       else if( request()->routeIs('queues.update.reason') ) {

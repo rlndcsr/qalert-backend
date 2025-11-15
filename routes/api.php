@@ -14,6 +14,8 @@ Route::post('/adminLogin', [AuthController::class, 'adminLogin'])->name('admin.l
 Route::post('/users', [UserController::class, 'store'])->name('users.store');
 Route::get('/system-status', [SystemSettingsController::class, 'show']);
 Route::put('/system-status', [SystemSettingsController::class, 'updateSystemStatus']);
+Route::get('/queues', [QueueEntriesController::class, 'index']);
+Route::get('/users', [UserController::class, 'index']);
 
 
 // Private API Routes
@@ -27,14 +29,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('users.logout');
 
     Route::controller(UserController::class)->group(function () {
-        Route::get('/users',                'index');
         Route::get('/users/{id}',           'show');
         Route::put('/users/{id}',           'update')->name('users.update');
         Route::delete('/users/{id}',        'destroy');
     });
 
     Route::controller(QueueEntriesController::class)->group(function () {
-        Route::get('/queues',               'index');
         Route::get('/queues/{id}',          'show');
         Route::post('/queues',              'store')->name('queues.store');
         Route::put('/queues/status/{id}',   'updateQueueStatus')->name('queues.update.status');
