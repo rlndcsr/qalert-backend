@@ -32,6 +32,7 @@ class UserRequest extends FormRequest
             return [
                 'name'              => 'required|string|max:255',
                 'email_address'     => 'required|string|email|max:255|unique:users,email_address',
+                'gender'            => 'nullable|in:male,female,other',
                 'phone_number'      => ['required', new ValidPhoneNumber], 
                 'id_number'         => 'nullable|string|max:50|unique:users,id_number',
                 'password'          => 'required|string|min:8|confirmed',
