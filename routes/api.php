@@ -7,7 +7,6 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\SystemSettingsController;
 use App\Http\Controllers\Api\QueueEntriesController;
 use App\Http\Controllers\Api\ReasonCategoryController;
-use Egulias\EmailValidator\Result\Reason\Reason;
 
 // Public API Routes
 Route::post('/login', [AuthController::class, 'login'])->name('users.login');
