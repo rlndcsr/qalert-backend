@@ -4,9 +4,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\QueueEntriesController;
 use App\Http\Controllers\SystemSettingsController;
-
+use App\Http\Controllers\Api\QueueEntriesController;
+use App\Http\Controllers\Api\ReasonCategoryController;
+use Egulias\EmailValidator\Result\Reason\Reason;
 
 // Public API Routes
 Route::post('/login', [AuthController::class, 'login'])->name('users.login');
@@ -16,6 +17,9 @@ Route::get('/system-status', [SystemSettingsController::class, 'show']);
 Route::put('/system-status', [SystemSettingsController::class, 'updateSystemStatus']);
 Route::get('/queues', [QueueEntriesController::class, 'index']);
 Route::get('/users', [UserController::class, 'index']);
+
+Route::get('/reason-categories', [ReasonCategoryController::class, 'index']);
+Route::get('/reason-categories/{id}', [ReasonCategoryController::class, 'show']);
 
 
 // Private API Routes
