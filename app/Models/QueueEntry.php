@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\ReasonCategory;
 
 class QueueEntry extends Model
 {
@@ -34,6 +35,7 @@ class QueueEntry extends Model
         'user_id',
         'queue_number',
         'reason',
+        'reason_category_id',
         'queue_status',
         'estimated_time_wait',
         'date',
@@ -45,5 +47,10 @@ class QueueEntry extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id', 'user_id');
+    }
+
+    public function reasonCategory()
+    {
+        return $this->belongsTo(ReasonCategory::class, 'reason_category_id');
     }
 }
