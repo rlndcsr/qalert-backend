@@ -26,6 +26,7 @@ class QueueEntriesRequest extends FormRequest
               'user_id'             => 'required|exists:users,user_id',
               'reason'              => 'required|string|max:255',
               'reason_category_id'  => 'nullable|exists:reason_categories,reason_category_id',
+              'estimated_time_wait' => 'nullable|string|max:255',
               'date'                => 'nullable|date_format:Y-m-d',
           ];
       }
