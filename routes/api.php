@@ -9,16 +9,16 @@ use App\Http\Controllers\Api\QueueEntriesController;
 use App\Http\Controllers\Api\ReasonCategoryController;
 
 // Public API Routes
-Route::post('/login', [AuthController::class, 'login'])->name('users.login');
-Route::post('/adminLogin', [AuthController::class, 'adminLogin'])->name('admin.login');
-Route::post('/users', [UserController::class, 'store'])->name('users.store');
-Route::get('/system-status', [SystemSettingsController::class, 'show']);
-Route::put('/system-status', [SystemSettingsController::class, 'updateSystemStatus']);
-Route::get('/queues', [QueueEntriesController::class, 'index']);
-Route::get('/users', [UserController::class, 'index']);
+Route::post('/login',           [AuthController::class, 'login'])->name('users.login');
+Route::post('/adminLogin',      [AuthController::class, 'adminLogin'])->name('admin.login');
+Route::post('/users',           [UserController::class, 'store'])->name('users.store');
+Route::get('/system-status',    [SystemSettingsController::class, 'show']);
+Route::put('/system-status',    [SystemSettingsController::class, 'updateSystemStatus']);
+Route::get('/queues',           [QueueEntriesController::class, 'index']);
+Route::get('/users',            [UserController::class, 'index']);
 
-Route::get('/reason-categories', [ReasonCategoryController::class, 'index']);
-Route::get('/reason-categories/{id}', [ReasonCategoryController::class, 'show']);
+Route::get('/reason-categories',        [ReasonCategoryController::class, 'index'])->name('reason-categories.index');
+Route::get('/reason-categories/{id}',   [ReasonCategoryController::class, 'show'])->name('reason-categories.show');
 
 
 // Private API Routes
