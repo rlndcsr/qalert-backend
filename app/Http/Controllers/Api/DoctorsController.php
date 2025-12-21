@@ -43,9 +43,18 @@ class DoctorsController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(DoctorsRequest $request, string $id)
     {
-        //
+        $validated = $request->validated();
+
+        $doctor = Doctor::findOrFail($id);
+
+        $doctor->update($validated);
+
+        return response()->json([
+            'message' => 'Doctor updated successfully',
+            'doctor' => $doctor
+        ]);
     }
 
     /**
