@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\DoctorsController;
+use App\Http\Controllers\Api\SchedulesController;
 use App\Http\Controllers\SystemSettingsController;
 use App\Http\Controllers\Api\QueueEntriesController;
 use App\Http\Controllers\Api\ReasonCategoryController;
@@ -21,6 +22,7 @@ Route::get('/users',            [UserController::class, 'index']);
 Route::get('/reason-categories',        [ReasonCategoryController::class, 'index'])->name('reason-categories.index');
 Route::get('/reason-categories/{id}',   [ReasonCategoryController::class, 'show'])->name('reason-categories.show');
 
+Route::get('/schedules',            [SchedulesController::class, 'index']);
 
 // Private API Routes
 Route::get('/user', function (Request $request) {
