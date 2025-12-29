@@ -23,7 +23,7 @@ return [
         'http://localhost:3000',
         'https://intercarpellary-rosana-indivisibly.ngrok-free.dev',
         'https://qalert-frontend.vercel.app',
-        'https://csu-uchw-qalert.vercel.app',
+        'https://csuuchw-qalert.vercel.app',
     ],
 
     'allowed_origins_patterns' => [],
