@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\DoctorsController;
 use App\Http\Controllers\Api\SchedulesController;
 use App\Http\Controllers\SystemSettingsController;
 use App\Http\Controllers\Api\QueueEntriesController;
+use App\Http\Controllers\Api\DoctorScheduleController;
 use App\Http\Controllers\Api\ReasonCategoryController;
 
 // Public API Routes
@@ -22,7 +23,9 @@ Route::get('/users',            [UserController::class, 'index']);
 Route::get('/reason-categories',        [ReasonCategoryController::class, 'index'])->name('reason-categories.index');
 Route::get('/reason-categories/{id}',   [ReasonCategoryController::class, 'show'])->name('reason-categories.show');
 
-Route::get('/schedules',            [SchedulesController::class, 'index']);
+Route::get('/doctors',                  [DoctorsController::class, 'index']);
+Route::get('/schedules',                [SchedulesController::class, 'index']);
+Route::get('/doctor-schedule',          [DoctorScheduleController::class, 'index']);
 
 // Private API Routes
 Route::get('/user', function (Request $request) {
@@ -50,7 +53,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
     });
 
     Route::controller(DoctorsController::class)->group(function () {
-        Route::get('/doctors',          'index');
         Route::post('/doctors',         'store')->name('doctors.store');
         Route::get('/doctors/{id}',     'show');
         Route::put('/doctors/{id}',     'update')->name('doctors.update');
