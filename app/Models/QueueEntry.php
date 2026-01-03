@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\ReasonCategory;
+use App\Models\Schedule;
 
 class QueueEntry extends Model
 {
@@ -36,6 +37,7 @@ class QueueEntry extends Model
         'queue_number',
         'reason',
         'reason_category_id',
+        'schedule_id',
         'queue_status',
         'estimated_time_wait',
         'date',
@@ -52,5 +54,10 @@ class QueueEntry extends Model
     public function reasonCategory()
     {
         return $this->belongsTo(ReasonCategory::class, 'reason_category_id');
+    }
+
+    public function schedule()
+    {
+        return $this->belongsTo(Schedule::class, 'schedule_id', 'schedule_id');
     }
 }
