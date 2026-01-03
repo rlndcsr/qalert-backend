@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\QueueEntry;
+use App\Models\Schedule;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\QueueEntriesRequest;
+use Carbon\Carbon;
 
 class QueueEntriesController extends Controller
 {
@@ -30,6 +32,19 @@ class QueueEntriesController extends Controller
         }
 
         $validated['queue_status'] = 'waiting';
+
+        // Auto-fill schedule_id based on current day and shift
+        $currentDay = Carbon::now()->format('D'); // Mon, Tue, Wed, Thu, Fri, Sat, Sun
+        $currentHour = Carbon::now()->hour;
+        $currentShift = $currentHour < 12 ? 'AM' : 'PM';
+
+        $schedule = Schedule::where('day', $currentDay)
+            ->where('shift', $currentShift)
+            ->first();
+
+        if ($schedule) {
+            $validated['schedule_id'] = $schedule->schedule_id;
+        }
 
         $latestQueueNumber = QueueEntry::whereDate('date', $validated['date'])
             ->max('queue_number');
