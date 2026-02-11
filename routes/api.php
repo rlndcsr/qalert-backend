@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\QueueEntriesController;
 use App\Http\Controllers\Api\DoctorScheduleController;
 use App\Http\Controllers\Api\ReasonCategoryController;
 use App\Http\Controllers\Api\EmergencyEncounterController;
+use App\Http\Controllers\Api\AppointmentController;
 
 // Public API Routes
 Route::post('/login',           [AuthController::class, 'login'])->name('users.login');
@@ -69,6 +70,14 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('/emergency-encounters/{id}',    'show')->name('emergency-encounters.show');
         Route::put('/emergency-encounters/{id}',    'update')->name('emergency-encounters.update');
         Route::delete('/emergency-encounters/{id}', 'destroy')->name('emergency-encounters.destroy');
+    });
+
+    Route::controller(AppointmentController::class)->group(function () {
+        Route::get('/appointments',         'index')->name('appointments.index');
+        Route::post('/appointments',        'store')->name('appointments.store');
+        Route::get('/appointments/{id}',    'show')->name('appointments.show');
+        Route::put('/appointments/{id}',    'update')->name('appointments.update');
+        Route::delete('/appointments/{id}', 'destroy')->name('appointments.destroy');
     });
     
 }); 
