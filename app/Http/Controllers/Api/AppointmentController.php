@@ -29,15 +29,28 @@ class AppointmentController extends Controller
     {
         $validated = $request->validated();
 
-        // Check if user already has a queue entry for this schedule and date
-        $existingQueueEntry = QueueEntry::where('user_id', $validated['user_id'])
+        // Check if user already has an active (non-cancelled) queue entry for this schedule and date
+        $existingActiveQueueEntry = QueueEntry::where('user_id', $validated['user_id'])
             ->where('schedule_id', $validated['schedule_id'])
             ->where('date', $validated['appointment_date'])
+            ->whereNotIn('queue_status', ['cancelled'])
             ->first();
 
-        if ($existingQueueEntry) {
+        if ($existingActiveQueueEntry) {
             return response()->json([
-                'message' => 'User already has a queue entry for this schedule and date.'
+                'message' => 'User already has an active queue entry for this schedule and date.'
+            ], 422);
+        }
+
+        // Also check if user already has an active (non-cancelled) appointment for this date
+        $existingActiveAppointment = Appointment::where('user_id', $validated['user_id'])
+            ->where('appointment_date', $validated['appointment_date'])
+            ->whereNotIn('status', ['cancelled'])
+            ->first();
+
+        if ($existingActiveAppointment) {
+            return response()->json([
+                'message' => 'User already has an active appointment for this date.'
             ], 422);
         }
 
@@ -85,9 +98,10 @@ class AppointmentController extends Controller
      */
     private function determineQueueNumber(int $scheduleId, string $date, string $time): int
     {
-        // Get all appointments for this schedule and date, ordered by time
+        // Get all active (non-cancelled) appointments for this schedule and date, ordered by time
         $appointments = Appointment::where('schedule_id', $scheduleId)
             ->where('appointment_date', $date)
+            ->whereNotIn('status', ['cancelled'])
             ->orderBy('appointment_time')
             ->get();
 
@@ -111,10 +125,11 @@ class AppointmentController extends Controller
      */
     private function reorderQueueEntries(int $scheduleId, string $date, int $newPosition): void
     {
-        // Get all queue entries for this schedule and date with queue_number >= newPosition
+        // Get all active (non-cancelled) queue entries for this schedule and date with queue_number >= newPosition
         QueueEntry::where('schedule_id', $scheduleId)
             ->where('date', $date)
             ->where('queue_number', '>=', $newPosition)
+            ->whereNotIn('queue_status', ['cancelled'])
             ->increment('queue_number');
     }
 
