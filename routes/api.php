@@ -10,6 +10,7 @@ use App\Http\Controllers\SystemSettingsController;
 use App\Http\Controllers\Api\QueueEntriesController;
 use App\Http\Controllers\Api\DoctorScheduleController;
 use App\Http\Controllers\Api\ReasonCategoryController;
+use App\Http\Controllers\Api\EmergencyEncounterController;
 
 // Public API Routes
 Route::post('/login',           [AuthController::class, 'login'])->name('users.login');
@@ -28,6 +29,8 @@ Route::get('/reason-categories/{id}',   [ReasonCategoryController::class, 'show'
 Route::get('/doctors',                  [DoctorsController::class, 'index']);
 Route::get('/schedules',                [SchedulesController::class, 'index']);
 Route::get('/doctor-schedule',          [DoctorScheduleController::class, 'index']);
+
+Route::get('/emergency-encounters',     [EmergencyEncounterController::class, 'index'])->name('emergency-encounters.index');
 
 // Private API Routes
 Route::get('/user', function (Request $request) {
@@ -59,6 +62,13 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('/doctors/{id}',     'show');
         Route::put('/doctors/{id}',     'update')->name('doctors.update');
         Route::delete('/doctors/{id}',  'destroy');
+    });
+
+    Route::controller(EmergencyEncounterController::class)->group(function () {
+        Route::post('/emergency-encounters',        'store')->name('emergency-encounters.store');
+        Route::get('/emergency-encounters/{id}',    'show')->name('emergency-encounters.show');
+        Route::put('/emergency-encounters/{id}',    'update')->name('emergency-encounters.update');
+        Route::delete('/emergency-encounters/{id}', 'destroy')->name('emergency-encounters.destroy');
     });
     
 }); 
