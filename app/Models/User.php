@@ -35,6 +35,8 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email_address',
+        'email_verification_code',
+        'email_verified_at',
         'gender',
         'phone_number',
         'id_number',
@@ -50,6 +52,7 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'email_verification_code',
     ];
 
     /**
@@ -60,6 +63,7 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
+            'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
     }

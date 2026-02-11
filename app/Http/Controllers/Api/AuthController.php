@@ -29,6 +29,13 @@ class AuthController extends Controller
             ]);
         }
 
+        // Check if email is verified
+        if (is_null($user->email_verified_at)) {
+            return response()->json([
+                'message' => 'Please verify your email before logging in.'
+            ], 403);
+        }
+
         $response = [
             'user'  => $user,
             'token' => $user->createToken($loginInput)->plainTextToken
@@ -70,6 +77,13 @@ class AuthController extends Controller
             throw ValidationException::withMessages([
                 'email_address' => ['The provided credentials are incorrect.'],
             ]);
+        }
+
+        // Check if email is verified
+        if (is_null($user->email_verified_at)) {
+            return response()->json([
+                'message' => 'Please verify your email before logging in.'
+            ], 403);
         }
 
         $token = $user->createToken('adminToken')->plainTextToken;

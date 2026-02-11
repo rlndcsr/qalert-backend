@@ -15,6 +15,8 @@ use App\Http\Controllers\Api\ReasonCategoryController;
 Route::post('/login',           [AuthController::class, 'login'])->name('users.login');
 Route::post('/adminLogin',      [AuthController::class, 'adminLogin'])->name('admin.login');
 Route::post('/users',           [UserController::class, 'store'])->name('users.store');
+Route::post('/verify-email',    [UserController::class, 'verifyEmail'])->name('users.verify-email');
+Route::post('/resend-verification-code', [UserController::class, 'resendVerificationCode'])->name('users.resend-verification-code');
 Route::get('/system-status',    [SystemSettingsController::class, 'show']);
 Route::put('/system-status',    [SystemSettingsController::class, 'updateSystemStatus']);
 Route::get('/queues',           [QueueEntriesController::class, 'index']);
