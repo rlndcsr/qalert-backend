@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\DoctorScheduleController;
 use App\Http\Controllers\Api\ReasonCategoryController;
 use App\Http\Controllers\Api\EmergencyEncounterController;
 use App\Http\Controllers\Api\AppointmentController;
+use App\Http\Controllers\Api\Admin\ReportController;
 
 // Public API Routes
 Route::post('/login',           [AuthController::class, 'login'])->name('users.login');
@@ -79,6 +80,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::put('/appointments/{id}',    'update')->name('appointments.update');
         Route::delete('/appointments/{id}', 'destroy')->name('appointments.destroy');
     });
+
+    // Admin Reports
+    Route::get('/admin/reports/pdf', [ReportController::class, 'generatePdf'])->name('admin.reports.pdf');
     
 }); 
 
