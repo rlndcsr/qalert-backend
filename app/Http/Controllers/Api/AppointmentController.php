@@ -62,8 +62,9 @@ class AppointmentController extends Controller
                 'queue_status'        => 'waiting',
                 'estimated_time_wait' => null,
                 'reason'              => 'Appointment',
-                'reason_category_id'  => null,
+                'reason_category_id'  => $validated['reason_category_id'] ?? null,
                 'date'                => $validated['appointment_date'],
+                'appointment_id'      => $appointment->appointment_id,
             ]);
 
             return [
@@ -172,10 +173,7 @@ class AppointmentController extends Controller
      */
     private function cancelQueueEntry(Appointment $appointment): void
     {
-        $queueEntry = QueueEntry::where('user_id', $appointment->user_id)
-            ->where('schedule_id', $appointment->schedule_id)
-            ->where('date', $appointment->appointment_date)
-            ->where('reason', 'Appointment')
+        $queueEntry = QueueEntry::where('appointment_id', $appointment->appointment_id)
             ->first();
 
         if ($queueEntry) {

@@ -23,18 +23,20 @@ class AppointmentRequest extends FormRequest
     {
         if (request()->routeIs('appointments.store')) {
             return [
-                'user_id'          => 'required|exists:users,user_id',
-                'schedule_id'      => 'required|exists:schedules,schedule_id',
-                'appointment_date' => 'required|date|date_format:Y-m-d',
-                'appointment_time' => 'required|date_format:H:i',
+                'user_id'            => 'required|exists:users,user_id',
+                'schedule_id'        => 'required|exists:schedules,schedule_id',
+                'appointment_date'   => 'required|date|date_format:Y-m-d',
+                'appointment_time'   => 'required|date_format:H:i',
+                'reason_category_id' => 'nullable|exists:reason_categories,reason_category_id',
             ];
         } elseif (request()->routeIs('appointments.update')) {
             return [
-                'user_id'          => 'sometimes|exists:users,user_id',
-                'schedule_id'      => 'sometimes|exists:schedules,schedule_id',
-                'appointment_date' => 'sometimes|date|date_format:Y-m-d',
-                'appointment_time' => 'sometimes|date_format:H:i',
-                'status'           => 'sometimes|in:pending,confirmed,cancelled,completed',
+                'user_id'            => 'sometimes|exists:users,user_id',
+                'schedule_id'        => 'sometimes|exists:schedules,schedule_id',
+                'appointment_date'   => 'sometimes|date|date_format:Y-m-d',
+                'appointment_time'   => 'sometimes|date_format:H:i',
+                'reason_category_id' => 'nullable|exists:reason_categories,reason_category_id',
+                'status'             => 'sometimes|in:pending,confirmed,cancelled,completed',
             ];
         }
 
