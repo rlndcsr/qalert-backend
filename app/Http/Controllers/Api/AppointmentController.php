@@ -64,7 +64,8 @@ class AppointmentController extends Controller
             $queueNumber = $this->determineQueueNumber(
                 $validated['schedule_id'],
                 $validated['appointment_date'],
-                $validated['appointment_time']
+                $validated['appointment_time'],
+                $appointment->appointment_id
             );
 
             // Create queue entry
@@ -97,32 +98,29 @@ class AppointmentController extends Controller
      * Determine queue number based on appointment time order.
      * For same appointment times, later arrivals get higher queue numbers.
      */
-    private function determineQueueNumber(int $scheduleId, string $date, string $time): int
+    private function determineQueueNumber(int $scheduleId, string $date, string $time, int $currentAppointmentId): int
     {
         // Normalize the input time to H:i:s format for consistent comparison
         $normalizedTime = \Carbon\Carbon::parse($time)->format('H:i:s');
 
-        // Count how many active appointments have an earlier time, OR same time (they joined before us)
-        $position = Appointment::where('schedule_id', $scheduleId)
+        // Count how many OTHER active appointments have an earlier time
+        $earlierCount = Appointment::where('schedule_id', $scheduleId)
             ->where('appointment_date', $date)
+            ->where('appointment_id', '!=', $currentAppointmentId)
             ->whereNotIn('status', ['cancelled'])
-            ->where(function ($query) use ($normalizedTime) {
-                $query->whereRaw('TIME(appointment_time) < ?', [$normalizedTime]);
-            })
+            ->whereRaw('TIME(appointment_time) < ?', [$normalizedTime])
             ->count();
 
-        // Add 1 because queue numbers start at 1
-        $position = $position + 1;
-
-        // Also count appointments with the same time (they were created before this one, so they get priority)
+        // Count OTHER appointments with the same time (they were created before this one, so they get priority)
         $sameTimeCount = Appointment::where('schedule_id', $scheduleId)
             ->where('appointment_date', $date)
+            ->where('appointment_id', '!=', $currentAppointmentId)
             ->whereNotIn('status', ['cancelled'])
             ->whereRaw('TIME(appointment_time) = ?', [$normalizedTime])
             ->count();
 
-        // New appointment with same time should be placed after existing ones with same time
-        $position = $position + $sameTimeCount;
+        // Position = earlier appointments + same-time appointments + 1 (for 1-based numbering)
+        $position = $earlierCount + $sameTimeCount + 1;
 
         // Reorder existing queue entries if needed
         $this->reorderQueueEntries($scheduleId, $date, $position);
