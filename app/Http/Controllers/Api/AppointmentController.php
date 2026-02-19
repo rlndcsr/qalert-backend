@@ -95,24 +95,34 @@ class AppointmentController extends Controller
 
     /**
      * Determine queue number based on appointment time order.
+     * For same appointment times, later arrivals get higher queue numbers.
      */
     private function determineQueueNumber(int $scheduleId, string $date, string $time): int
     {
-        // Get all active (non-cancelled) appointments for this schedule and date, ordered by time
-        $appointments = Appointment::where('schedule_id', $scheduleId)
+        // Normalize the input time to H:i:s format for consistent comparison
+        $normalizedTime = \Carbon\Carbon::parse($time)->format('H:i:s');
+
+        // Count how many active appointments have an earlier time, OR same time (they joined before us)
+        $position = Appointment::where('schedule_id', $scheduleId)
             ->where('appointment_date', $date)
             ->whereNotIn('status', ['cancelled'])
-            ->orderBy('appointment_time')
-            ->get();
+            ->where(function ($query) use ($normalizedTime) {
+                $query->whereRaw('TIME(appointment_time) < ?', [$normalizedTime]);
+            })
+            ->count();
 
-        // Find the position where this appointment should be inserted
-        $position = 1;
-        foreach ($appointments as $appointment) {
-            if ($time <= $appointment->appointment_time) {
-                break;
-            }
-            $position++;
-        }
+        // Add 1 because queue numbers start at 1
+        $position = $position + 1;
+
+        // Also count appointments with the same time (they were created before this one, so they get priority)
+        $sameTimeCount = Appointment::where('schedule_id', $scheduleId)
+            ->where('appointment_date', $date)
+            ->whereNotIn('status', ['cancelled'])
+            ->whereRaw('TIME(appointment_time) = ?', [$normalizedTime])
+            ->count();
+
+        // New appointment with same time should be placed after existing ones with same time
+        $position = $position + $sameTimeCount;
 
         // Reorder existing queue entries if needed
         $this->reorderQueueEntries($scheduleId, $date, $position);
