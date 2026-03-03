@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Appointment;
 use App\Models\ReasonCategory;
 use App\Models\Schedule;
+use Carbon\Carbon;
 
 class QueueEntry extends Model
 {
@@ -43,7 +44,44 @@ class QueueEntry extends Model
         'queue_status',
         'estimated_time_wait',
         'date',
+        'session_start_at',
+        'session_end_at',
+        'session_duration_minutes',
     ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'session_start_at' => 'datetime',
+        'session_end_at'   => 'datetime',
+        'session_duration_minutes' => 'integer',
+    ];
+
+    /**
+     * Handle session tracking when queue status changes.
+     *
+     * Call this method before saving when queue_status is updated.
+     */
+    public function trackSession(): void
+    {
+        if ($this->isDirty('queue_status')) {
+            $newStatus = $this->queue_status;
+
+            if ($newStatus === 'now_serving') {
+                $this->session_start_at = Carbon::now();
+                $this->session_end_at = null;
+                $this->session_duration_minutes = null;
+            }
+
+            if ($newStatus === 'completed' && $this->session_start_at) {
+                $this->session_end_at = Carbon::now();
+                $this->session_duration_minutes = (int) $this->session_start_at->diffInMinutes($this->session_end_at);
+            }
+        }
+    }
 
     /**
      * Relationships

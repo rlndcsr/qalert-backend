@@ -80,7 +80,9 @@ class QueueEntriesController extends Controller
 
         $queueEntry = QueueEntry::findOrFail($id);
 
-        $queueEntry->update($validated);
+        $queueEntry->fill($validated);
+        $queueEntry->trackSession();
+        $queueEntry->save();
 
         return response()->json([
             'message' => 'Queue entry updated successfully',
@@ -113,7 +115,7 @@ class QueueEntriesController extends Controller
         $queueEntry = QueueEntry::findOrFail($id);
 
         $validated = $request->validate([
-            'queue_status' => 'in:waiting,called,completed,cancelled',
+            'queue_status' => 'in:waiting,called,now_serving,completed,cancelled',
             'estimated_time_wait' => 'nullable|string',
         ]);
 
@@ -121,7 +123,9 @@ class QueueEntriesController extends Controller
             $validated['estimated_time_wait'] = null;
         }
 
-        $queueEntry->update($validated);
+        $queueEntry->fill($validated);
+        $queueEntry->trackSession();
+        $queueEntry->save();
 
         return response()->json([
             'message' => 'Queue entry updated successfully',
