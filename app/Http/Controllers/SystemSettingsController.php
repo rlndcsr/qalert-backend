@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\SystemSetting;
+use App\Services\SseEventService;
 use Illuminate\Http\Request;
 
 class SystemSettingsController extends Controller
@@ -25,6 +26,8 @@ class SystemSettingsController extends Controller
         $setting->update([
             'is_online' => $request->is_online,
         ]);
+
+        SseEventService::publish('system-status-updated', ['is_online' => (int) $setting->is_online]);
 
         return response()->json([
             'message' => 'System status updated successfully',

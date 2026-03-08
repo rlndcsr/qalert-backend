@@ -13,6 +13,10 @@ use App\Http\Controllers\Api\ReasonCategoryController;
 use App\Http\Controllers\Api\EmergencyEncounterController;
 use App\Http\Controllers\Api\AppointmentController;
 use App\Http\Controllers\Api\Admin\ReportController;
+use App\Http\Controllers\Api\EventStreamController;
+
+// SSE endpoint (public — the frontend connects without auth)
+Route::get('/events', [EventStreamController::class, 'stream']);
 
 // Public API Routes
 Route::post('/login',           [AuthController::class, 'login'])->name('users.login');

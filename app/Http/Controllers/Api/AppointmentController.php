@@ -7,6 +7,7 @@ use App\Models\QueueEntry;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AppointmentRequest;
 use Illuminate\Support\Facades\DB;
+use App\Services\SseEventService;
 
 class AppointmentController extends Controller
 {
@@ -86,6 +87,8 @@ class AppointmentController extends Controller
                 'queue_entry'  => $queueEntry,
             ];
         });
+
+        SseEventService::publish('queue-updated', ['action' => 'created', 'queue_entry_id' => $result['queue_entry']->queue_entry_id]);
 
         return response()->json([
             'message'     => 'Appointment created and queue entry assigned',
@@ -168,6 +171,8 @@ class AppointmentController extends Controller
 
         $appointment->update($validated);
 
+        SseEventService::publish('queue-updated', ['action' => 'appointment_updated', 'appointment_id' => $appointment->appointment_id]);
+
         return response()->json([
             'message'     => 'Appointment updated successfully',
             'appointment' => $appointment,
@@ -185,6 +190,8 @@ class AppointmentController extends Controller
         $this->cancelQueueEntry($appointment);
 
         $appointment->delete();
+
+        SseEventService::publish('queue-updated', ['action' => 'appointment_deleted', 'appointment_id' => $appointment->appointment_id]);
 
         return response()->json([
             'message' => 'Appointment deleted successfully',

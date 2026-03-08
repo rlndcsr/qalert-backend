@@ -8,6 +8,7 @@ use App\Mail\VerifyEmailCodeMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Requests\UserRequest;
+use App\Services\SseEventService;
 
 class UserController extends Controller
 {
@@ -39,6 +40,8 @@ class UserController extends Controller
 
         $user = User::create($validated);
 
+        SseEventService::publish('user-updated', ['action' => 'created', 'user_id' => $user->user_id]);
+
         // Send verification email
         Mail::to($user->email_address)->send(new VerifyEmailCodeMail($verificationCode, $user->name));
         
@@ -67,7 +70,9 @@ class UserController extends Controller
         $user = User::findOrFail($id);
 
         $user->update($validated);
-        
+
+        SseEventService::publish('user-updated', ['action' => 'updated', 'user_id' => $user->user_id]);
+
         return response()->json([
             'message' => 'User updated successfully',
             'user' => $user
@@ -82,7 +87,9 @@ class UserController extends Controller
         $user = User::findOrFail($id);
 
         $user->delete();
-        
+
+        SseEventService::publish('user-updated', ['action' => 'deleted', 'user_id' => $user->user_id]);
+
         return response()->json([
             'message' => 'User deleted successfully',
             'user' => $user

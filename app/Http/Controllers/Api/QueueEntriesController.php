@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\QueueEntriesRequest;
 use Carbon\Carbon;
+use App\Services\SseEventService;
 
 class QueueEntriesController extends Controller
 {
@@ -54,7 +55,9 @@ class QueueEntriesController extends Controller
         $validated['queue_number'] = $nextQueueNumber;
 
         $queueEntry = QueueEntry::create($validated);
-        
+
+        SseEventService::publish('queue-updated', ['action' => 'created', 'queue_entry_id' => $queueEntry->queue_entry_id]);
+
         return response()->json([
             'message' => 'Queue entry created successfully',
             'queue_entry' => $queueEntry
@@ -83,6 +86,8 @@ class QueueEntriesController extends Controller
         $queueEntry->fill($validated);
         $queueEntry->trackSession();
         $queueEntry->save();
+
+        SseEventService::publish('queue-updated', ['action' => 'status_changed', 'queue_entry_id' => $queueEntry->queue_entry_id, 'status' => $queueEntry->queue_status]);
 
         return response()->json([
             'message' => 'Queue entry updated successfully',
@@ -127,6 +132,8 @@ class QueueEntriesController extends Controller
         $queueEntry->trackSession();
         $queueEntry->save();
 
+        SseEventService::publish('queue-updated', ['action' => 'admin_updated', 'queue_entry_id' => $queueEntry->queue_entry_id, 'status' => $queueEntry->queue_status]);
+
         return response()->json([
             'message' => 'Queue entry updated successfully',
             'queue_entry' => $queueEntry
@@ -141,6 +148,8 @@ class QueueEntriesController extends Controller
         $queueEntry = QueueEntry::findOrFail($id);
 
         $queueEntry->delete();
+
+        SseEventService::publish('queue-updated', ['action' => 'deleted', 'queue_entry_id' => $queueEntry->queue_entry_id]);
 
         return response()->json([
             'message' => 'Queue entry deleted successfully',
