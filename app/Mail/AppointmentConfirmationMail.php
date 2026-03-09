@@ -15,11 +15,13 @@ class AppointmentConfirmationMail extends Mailable
 
     public Appointment $appointment;
     public string $token;
+    public string $confirmUrl;
 
-    public function __construct(Appointment $appointment, string $token)
+    public function __construct(Appointment $appointment, string $token, string $frontendUrl)
     {
         $this->appointment = $appointment;
         $this->token = $token;
+        $this->confirmUrl = rtrim($frontendUrl, '/') . '/appointments/confirm?token=' . $token;
     }
 
     public function envelope(): Envelope

@@ -76,8 +76,9 @@ class AppointmentController extends Controller
         // Send confirmation email
         $appointment = $result['appointment'];
         $appointment->load('user');
+        $frontendUrl = $validated['frontend_url'] ?? config('app.frontend_url', config('app.url'));
         Mail::to($appointment->user->email_address)->send(
-            new AppointmentConfirmationMail($appointment, $result['token'])
+            new AppointmentConfirmationMail($appointment, $result['token'], $frontendUrl)
         );
 
         SseEventService::publish('appointment-updated', ['appointment_id' => $appointment->appointment_id, 'status' => 'pending']);

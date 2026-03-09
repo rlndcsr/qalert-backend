@@ -77,7 +77,7 @@
         </div>
 
         <div class="text-center">
-            <a href="{{ config('app.frontend_url', config('app.url')) }}/appointments/confirm?token={{ $token }}" class="btn">
+            <a href="{{ $confirmUrl }}" class="btn">
                 Confirm Appointment
             </a>
         </div>

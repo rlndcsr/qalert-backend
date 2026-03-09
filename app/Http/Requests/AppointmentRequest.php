@@ -28,6 +28,7 @@ class AppointmentRequest extends FormRequest
                 'appointment_date'   => 'required|date|date_format:Y-m-d',
                 'appointment_time'   => 'required|date_format:H:i',
                 'reason_category_id' => 'nullable|exists:reason_categories,reason_category_id',
+                'frontend_url'       => 'nullable|url',
             ];
         } elseif (request()->routeIs('appointments.update')) {
             return [
