@@ -36,6 +36,8 @@ Route::get('/doctors',                  [DoctorsController::class, 'index']);
 Route::get('/schedules',                [SchedulesController::class, 'index']);
 Route::get('/doctor-schedule',          [DoctorScheduleController::class, 'index']);
 
+Route::get('/appointments/confirm/{token}', [AppointmentController::class, 'confirm'])->name('appointments.confirm');
+
 Route::get('/emergency-encounters',     [EmergencyEncounterController::class, 'index'])->name('emergency-encounters.index');
 
 // Private API Routes

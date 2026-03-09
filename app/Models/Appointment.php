@@ -37,6 +37,8 @@ class Appointment extends Model
         'appointment_time',
         'reason_category_id',
         'status',
+        'confirmation_token',
+        'confirmation_token_expires_at',
     ];
 
     /**
@@ -49,6 +51,7 @@ class Appointment extends Model
         return [
             'appointment_date' => 'date',
             'appointment_time' => 'datetime:H:i',
+            'confirmation_token_expires_at' => 'datetime',
         ];
     }
 
