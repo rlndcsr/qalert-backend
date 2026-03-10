@@ -21,6 +21,7 @@ class EmergencyEncounter extends Model
         'date',
         'time',
         'details',
+        'status',
     ];
 
     /**

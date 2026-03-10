@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EmergencyEncounterRequest;
 use App\Models\EmergencyEncounter;
+use App\Services\SseEventService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -46,6 +47,8 @@ class EmergencyEncounterController extends Controller
     public function store(EmergencyEncounterRequest $request): JsonResponse
     {
         $encounter = EmergencyEncounter::create($request->validated());
+
+        SseEventService::publish('emergency-encounter-updated', ['action' => 'created', 'id' => $encounter->id]);
 
         return response()->json([
             'success' => true,
@@ -98,6 +101,8 @@ class EmergencyEncounterController extends Controller
 
         $encounter->update($request->validated());
 
+        SseEventService::publish('emergency-encounter-updated', ['action' => 'updated', 'id' => $encounter->id]);
+
         return response()->json([
             'success' => true,
             'message' => 'Emergency encounter updated successfully.',
@@ -122,7 +127,10 @@ class EmergencyEncounterController extends Controller
             ], 404);
         }
 
+        $encounterId = $encounter->id;
         $encounter->delete();
+
+        SseEventService::publish('emergency-encounter-updated', ['action' => 'deleted', 'id' => $encounterId]);
 
         return response()->json([
             'success' => true,

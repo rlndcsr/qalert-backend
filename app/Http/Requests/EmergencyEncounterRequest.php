@@ -31,6 +31,7 @@ class EmergencyEncounterRequest extends FormRequest
             'date'           => ['required', 'date'],
             'time'           => ['required', 'date_format:H:i'],
             'details'        => ['required', 'string'],
+            'status'         => ['sometimes', 'in:active,done,cancelled'],
         ];
     }
 
