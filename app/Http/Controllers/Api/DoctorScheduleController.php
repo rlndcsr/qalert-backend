@@ -17,19 +17,17 @@ class DoctorScheduleController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'schedule_id' => 'required|integer|exists:schedules,schedule_id',
+            'doctor_id' => 'required|integer|exists:doctors,doctor_id',
+        ]);
+
+        $doctorSchedule = DoctorSchedule::create($validated);
+        return response()->json($doctorSchedule, 201);
     }
 
     /**
@@ -37,15 +35,11 @@ class DoctorScheduleController extends Controller
      */
     public function show(string $id)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
+        $doctorSchedule = DoctorSchedule::find($id);
+        if (!$doctorSchedule) {
+            return response()->json(['message' => 'DoctorSchedule not found'], 404);
+        }
+        return response()->json($doctorSchedule);
     }
 
     /**
@@ -53,7 +47,18 @@ class DoctorScheduleController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $doctorSchedule = DoctorSchedule::find($id);
+        if (!$doctorSchedule) {
+            return response()->json(['message' => 'DoctorSchedule not found'], 404);
+        }
+
+        $validated = $request->validate([
+            'schedule_id' => 'sometimes|required|integer|exists:schedules,schedule_id',
+            'doctor_id' => 'sometimes|required|integer|exists:doctors,doctor_id',
+        ]);
+
+        $doctorSchedule->update($validated);
+        return response()->json($doctorSchedule);
     }
 
     /**
@@ -61,6 +66,11 @@ class DoctorScheduleController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $doctorSchedule = DoctorSchedule::find($id);
+        if (!$doctorSchedule) {
+            return response()->json(['message' => 'DoctorSchedule not found'], 404);
+        }
+        $doctorSchedule->delete();
+        return response()->json(['message' => 'DoctorSchedule deleted successfully']);
     }
 }
