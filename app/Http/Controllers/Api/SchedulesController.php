@@ -21,7 +21,13 @@ class SchedulesController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'day' => 'required|string|in:Mon,Tue,Wed,Thu,Fri,Sat,Sun',
+            'shift' => 'required|string|in:AM,PM',
+        ]);
+
+        $schedule = Schedule::create($validated);
+        return response()->json($schedule, 201);
     }
 
     /**
@@ -29,7 +35,11 @@ class SchedulesController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $schedule = Schedule::find($id);
+        if (!$schedule) {
+            return response()->json(['message' => 'Schedule not found'], 404);
+        }
+        return response()->json($schedule);
     }
 
     /**
@@ -37,7 +47,18 @@ class SchedulesController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $schedule = Schedule::find($id);
+        if (!$schedule) {
+            return response()->json(['message' => 'Schedule not found'], 404);
+        }
+
+        $validated = $request->validate([
+            'day' => 'sometimes|required|string|in:Mon,Tue,Wed,Thu,Fri,Sat,Sun',
+            'shift' => 'sometimes|required|string|in:AM,PM',
+        ]);
+
+        $schedule->update($validated);
+        return response()->json($schedule);
     }
 
     /**
@@ -45,6 +66,11 @@ class SchedulesController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $schedule = Schedule::find($id);
+        if (!$schedule) {
+            return response()->json(['message' => 'Schedule not found'], 404);
+        }
+        $schedule->delete();
+        return response()->json(['message' => 'Schedule deleted successfully']);
     }
 }

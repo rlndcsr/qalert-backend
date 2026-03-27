@@ -33,7 +33,6 @@ Route::get('/reason-categories',        [ReasonCategoryController::class, 'index
 Route::get('/reason-categories/{id}',   [ReasonCategoryController::class, 'show'])->name('reason-categories.show');
 
 Route::get('/doctors',                  [DoctorsController::class, 'index']);
-Route::get('/schedules',                [SchedulesController::class, 'index']);
 
 Route::get('/appointments/confirm/{token}', [AppointmentController::class, 'confirm'])->name('appointments.confirm');
 
@@ -71,6 +70,14 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::delete('/doctors/{id}',  'destroy');
     });
 
+    Route::controller(SchedulesController::class)->group(function () {
+        Route::get('/schedules',            'index');
+        Route::get('/schedules/{id}',       'show');
+        Route::post('/schedules',           'store');
+        Route::put('/schedules/{id}',       'update');
+        Route::delete('/schedules/{id}',    'destroy');
+    });
+
     Route::controller(EmergencyEncounterController::class)->group(function () {
         Route::post('/emergency-encounters',        'store')->name('emergency-encounters.store');
         Route::get('/emergency-encounters/{id}',    'show')->name('emergency-encounters.show');
@@ -86,16 +93,14 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::delete('/appointments/{id}', 'destroy')->name('appointments.destroy');
     });
 
-    // DoctorSchedule CRUD
     Route::controller(DoctorScheduleController::class)->group(function () {
-        Route::get('/doctor-schedule', 'index');
-        Route::get('/doctor-schedule/{id}', 'show');
-        Route::post('/doctor-schedule', 'store');
-        Route::put('/doctor-schedule/{id}', 'update');
-        Route::delete('/doctor-schedule/{id}', 'destroy');
+        Route::get('/doctor-schedule',          'index');
+        Route::get('/doctor-schedule/{id}',     'show');
+        Route::post('/doctor-schedule',         'store');
+        Route::put('/doctor-schedule/{id}',     'update');
+        Route::delete('/doctor-schedule/{id}',  'destroy');
     });
 
-    // Admin Reports
     Route::get('/admin/reports/pdf', [ReportController::class, 'generatePdf'])->name('admin.reports.pdf');
     
 });
