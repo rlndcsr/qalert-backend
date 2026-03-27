@@ -58,7 +58,11 @@ class DoctorScheduleController extends Controller
         ]);
 
         $doctorSchedule->update($validated);
-        return response()->json($doctorSchedule);
+        $doctorSchedule->refresh();
+        return response()->json([
+            'message' => 'DoctorSchedule updated successfully',
+            'data' => $doctorSchedule
+        ]);
     }
 
     /**
@@ -70,7 +74,11 @@ class DoctorScheduleController extends Controller
         if (!$doctorSchedule) {
             return response()->json(['message' => 'DoctorSchedule not found'], 404);
         }
+        $deletedData = $doctorSchedule->toArray();
         $doctorSchedule->delete();
-        return response()->json(['message' => 'DoctorSchedule deleted successfully']);
+        return response()->json([
+            'message' => 'DoctorSchedule deleted successfully',
+            'data' => $deletedData
+        ]);
     }
 }

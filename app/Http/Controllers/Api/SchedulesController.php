@@ -58,7 +58,11 @@ class SchedulesController extends Controller
         ]);
 
         $schedule->update($validated);
-        return response()->json($schedule);
+        $schedule->refresh();
+        return response()->json([
+            'message' => 'Schedule updated successfully',
+            'data' => $schedule
+        ]);
     }
 
     /**
@@ -70,7 +74,11 @@ class SchedulesController extends Controller
         if (!$schedule) {
             return response()->json(['message' => 'Schedule not found'], 404);
         }
+        $deletedData = $schedule->toArray();
         $schedule->delete();
-        return response()->json(['message' => 'Schedule deleted successfully']);
+        return response()->json([
+            'message' => 'Schedule deleted successfully',
+            'data' => $deletedData
+        ]);
     }
 }
