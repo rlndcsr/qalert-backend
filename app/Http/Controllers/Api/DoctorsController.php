@@ -60,8 +60,17 @@ class DoctorsController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
-    {
-        //
-    }
+   public function destroy(string $id)
+   {
+        $doctor = Doctor::find($id);
+        if (!$doctor) {
+            return response()->json(['message' => 'Doctor not found'], 404);
+        }
+        $deletedData = $doctor->toArray();
+        $doctor->delete();
+        return response()->json([
+            'message' => 'Doctor deleted successfully',
+            'data' => $deletedData,
+        ]);
+   }
 }
