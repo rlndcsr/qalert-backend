@@ -19,7 +19,7 @@ class AppointmentController extends Controller
      */
     public function index()
     {
-        $appointments = Appointment::with(['user', 'schedule'])->get();
+        $appointments = Appointment::with(['user', 'schedule', 'doctor'])->get();
 
         return response()->json([
             'appointments' => $appointments
@@ -201,7 +201,7 @@ class AppointmentController extends Controller
      */
     public function show(string $id)
     {
-        $appointment = Appointment::with(['user', 'schedule'])->findOrFail($id);
+        $appointment = Appointment::with(['user', 'schedule', 'doctor'])->findOrFail($id);
 
         return response()->json([
             'appointment' => $appointment

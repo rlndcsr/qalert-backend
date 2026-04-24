@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\QueueEntry;
 use App\Models\ReasonCategory;
+use App\Models\Doctor;
 
 class Appointment extends Model
 {
@@ -33,6 +34,7 @@ class Appointment extends Model
     protected $fillable = [
         'user_id',
         'schedule_id',
+        'doctor_id',
         'appointment_date',
         'appointment_time',
         'reason_category_id',
@@ -66,6 +68,11 @@ class Appointment extends Model
     public function schedule()
     {
         return $this->belongsTo(Schedule::class, 'schedule_id', 'schedule_id');
+    }
+
+    public function doctor()
+    {
+        return $this->belongsTo(Doctor::class, 'doctor_id', 'doctor_id');
     }
 
     public function reasonCategory()

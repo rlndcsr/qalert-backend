@@ -25,6 +25,7 @@ class AppointmentRequest extends FormRequest
             return [
                 'user_id'            => 'required|exists:users,user_id',
                 'schedule_id'        => 'required|exists:schedules,schedule_id',
+                'doctor_id'          => 'nullable|exists:doctors,doctor_id',
                 'appointment_date'   => 'required|date|date_format:Y-m-d',
                 'appointment_time'   => 'required|date_format:H:i',
                 'reason_category_id' => 'nullable|exists:reason_categories,reason_category_id',
@@ -34,6 +35,7 @@ class AppointmentRequest extends FormRequest
             return [
                 'user_id'            => 'sometimes|exists:users,user_id',
                 'schedule_id'        => 'sometimes|exists:schedules,schedule_id',
+                'doctor_id'          => 'sometimes|exists:doctors,doctor_id',
                 'appointment_date'   => 'sometimes|date|date_format:Y-m-d',
                 'appointment_time'   => 'sometimes|date_format:H:i',
                 'reason_category_id' => 'nullable|exists:reason_categories,reason_category_id',
