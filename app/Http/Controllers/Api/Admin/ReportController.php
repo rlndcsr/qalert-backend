@@ -62,6 +62,7 @@ class ReportController extends Controller
         $summary = [
             'total_appointments' => $appointments->count(),
             'completed_appointments' => $appointments->where('status', 'completed')->count(),
+            'no_show_queues' => $queueEntries->where('status', 'no_show')->count(),
             'cancelled_appointments' => $appointments->where('status', 'cancelled')->count(),
             'pending_appointments' => $appointments->where('status', 'pending')->count(),
             'total_queues' => $queueEntries->count(),

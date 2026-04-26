@@ -221,8 +221,14 @@
                 <tr>
                     <td class="summary-label">Cancelled Appointments</td>
                     <td class="summary-value" style="color: #dc2626;">{{ $summary['cancelled_appointments'] }}</td>
+                    <td class="summary-label">No-Show Queues</td>
+                    <td class="summary-value" style="color: #dc2626;">{{ $summary['no_show_queues'] }}</td>
+                </tr>
+                <tr>
                     <td class="summary-label">Emergency Encounters</td>
                     <td class="summary-value" style="color: #7c3aed;">{{ $summary['emergency_encounters_count'] }}</td>
+                    <td class="summary-label"></td>
+                    <td class="summary-value"></td>
                 </tr>
             </table>
         </div>
