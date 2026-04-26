@@ -32,7 +32,7 @@ class QueueEntriesRequest extends FormRequest
       }
       else if( request()->routeIs('queues.update.status') ) {
           return [
-              'queue_status'  => 'sometimes|required|in:waiting,called,now_serving,completed,cancelled',
+              'queue_status'  => 'sometimes|required|in:waiting,called,now_serving,completed,cancelled,no_show',
           ];
       } 
       else if( request()->routeIs('queues.update.reason') ) {
@@ -42,7 +42,7 @@ class QueueEntriesRequest extends FormRequest
       }
       else if( request()->routeIs('queues.admin.update'))  {
           return [
-              'queue_status'         => 'sometimes|in:waiting,called,completed,cancelled',
+              'queue_status'         => 'sometimes|in:waiting,called,now_serving,completed,cancelled,no_show',
               'estimated_time_wait'  => 'sometimes|nullable|string|max:255',
           ];
       }
