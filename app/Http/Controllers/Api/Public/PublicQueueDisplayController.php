@@ -17,6 +17,8 @@ class PublicQueueDisplayController extends Controller
     public function index()
     {
         $today = now()->toDateString();
+        $dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+        $todayDay = $dayNames[now()->dayOfWeek];
 
         // Queues — today's queue entries
         $queues = QueueEntry::where('date', $today)
@@ -34,20 +36,20 @@ class PublicQueueDisplayController extends Controller
         $appointments = Appointment::whereIn('appointment_id', $appointmentIds)
             ->get(['appointment_id', 'appointment_time', 'schedule_id', 'doctor_id']);
 
-        $scheduleIds = $appointments->pluck('schedule_id')->filter()->unique();
-        $doctorIds = $appointments->pluck('doctor_id')->filter()->unique();
-
-        // Schedules — linked to those appointments
-        $schedules = Schedule::whereIn('schedule_id', $scheduleIds)
+        // Schedules — ALL schedules for today (AM + PM), not just ones with queue entries
+        $schedules = Schedule::where('day', $todayDay)
             ->get(['schedule_id', 'shift', 'day']);
 
-        // Doctors — linked to those appointments
-        $doctors = Doctor::whereIn('doctor_id', $doctorIds)
-            ->get(['doctor_id', 'doctor_name']);
+        $scheduleIds = $schedules->pluck('schedule_id')->unique();
 
-        // Doctor schedules — linked to those schedules
+        // Doctor schedules — linked to ALL today's schedules (not just queue-linked ones)
         $doctorSchedules = DoctorSchedule::whereIn('schedule_id', $scheduleIds)
             ->get(['schedule_id', 'doctor_id']);
+
+        // Doctors — linked to today's doctor schedules (gets ALL doctors for the day)
+        $doctorIds = $doctorSchedules->pluck('doctor_id')->filter()->unique();
+        $doctors = Doctor::whereIn('doctor_id', $doctorIds)
+            ->get(['doctor_id', 'doctor_name']);
 
         // Emergency encounters — today's active
         $emergencyEncounters = EmergencyEncounter::where('date', $today)
