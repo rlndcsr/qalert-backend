@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\EmergencyEncounterController;
 use App\Http\Controllers\Api\AppointmentController;
 use App\Http\Controllers\Api\Admin\ReportController;
 use App\Http\Controllers\Api\EventStreamController;
+use App\Http\Controllers\Api\Public\PublicQueueDisplayController;
 
 // SSE endpoint (public — the frontend connects without auth)
 Route::get('/events', [EventStreamController::class, 'stream']);
@@ -37,6 +38,7 @@ Route::get('/doctors',                  [DoctorsController::class, 'index']);
 Route::get('/appointments/confirm/{token}', [AppointmentController::class, 'confirm'])->name('appointments.confirm');
 
 Route::get('/emergency-encounters',     [EmergencyEncounterController::class, 'index'])->name('emergency-encounters.index');
+Route::get('/public/queue-display',     [PublicQueueDisplayController::class, 'index']);
 
 // Private API Routes
 Route::get('/user', function (Request $request) {
