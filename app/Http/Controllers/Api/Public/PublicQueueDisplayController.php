@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Appointment;
 use App\Models\Schedule;
 use App\Models\Doctor;
+use App\Models\ReasonCategory;
 use App\Models\DoctorSchedule;
 use App\Models\EmergencyEncounter;
 use Illuminate\Http\Request;
@@ -22,7 +23,7 @@ class PublicQueueDisplayController extends Controller
 
         // Queues — today's queue entries
         $queues = QueueEntry::where('date', $today)
-            ->get(['queue_entry_id', 'queue_number', 'queue_status', 'user_id', 'appointment_id']);
+            ->get(['queue_entry_id', 'queue_number', 'queue_status', 'user_id', 'appointment_id', 'reason_category_id']);
 
         // Collect IDs for filtering related data
         $userIds = $queues->pluck('user_id')->filter()->unique();
@@ -30,7 +31,7 @@ class PublicQueueDisplayController extends Controller
 
         // Users — only those in today's queues
         $users = User::whereIn('user_id', $userIds)
-            ->get(['user_id', 'id_number']);
+            ->get(['user_id', 'id_number', 'name', 'phone_number']);
 
         // Appointments — only linked to today's queues
         $appointments = Appointment::whereIn('appointment_id', $appointmentIds)
@@ -64,6 +65,7 @@ class PublicQueueDisplayController extends Controller
             'doctors' => $doctors,
             'doctor_schedules' => $doctorSchedules,
             'emergency_encounters' => $emergencyEncounters,
+            'reason_categories' => ReasonCategory::all(),
         ]);
     }
 }
