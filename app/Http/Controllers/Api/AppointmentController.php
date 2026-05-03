@@ -237,19 +237,15 @@ class AppointmentController extends Controller
      */
     public function destroy(string $id)
     {
-        $appointment = Appointment::findOrFail($id);
-
-        // Cancel or remove the associated queue entry
-        $this->cancelQueueEntry($appointment);
-
-        $appointmentId = $appointment->appointment_id;
+        $appointment = Appointment::find($id);
+        if (!$appointment) {
+            return response()->json(['message' => 'Appointment not found'], 404);
+        }
+        $deletedData = $appointment->toArray();
         $appointment->delete();
-
-        SseEventService::publish('queue-updated', ['action' => 'appointment_deleted', 'appointment_id' => $appointmentId]);
-        SseEventService::publish('appointment-updated', ['appointment_id' => $appointmentId, 'status' => 'deleted']);
-
         return response()->json([
             'message' => 'Appointment deleted successfully',
+            'data' => $deletedData,
         ]);
     }
 
