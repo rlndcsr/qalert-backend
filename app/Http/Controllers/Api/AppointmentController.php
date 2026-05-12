@@ -153,7 +153,7 @@ class AppointmentController extends Controller
      * Determine queue number based on appointment time order.
      * For same appointment times, later arrivals get higher queue numbers.
      */
-    private function determineQueueNumber(int $scheduleId, string $date, string $time, int $currentAppointmentId): int
+    private function determineQueueNumber(int $scheduleId, string $date, string $time, int $currentAppointmentId, ?int $excludeQueueEntryId = null): int
     {
         // Normalize the input time to H:i:s format for consistent comparison
         $normalizedTime = \Carbon\Carbon::parse($time)->format('H:i:s');
@@ -178,7 +178,10 @@ class AppointmentController extends Controller
         $position = $earlierCount + $sameTimeCount + 1;
 
         // Reorder existing queue entries if needed
-        $this->reorderQueueEntries($scheduleId, $date, $position);
+        // Skip this when excludeQueueEntryId is provided — rescheduleQueueEntry() handles shifting manually
+        if (!$excludeQueueEntryId) {
+            $this->reorderQueueEntries($scheduleId, $date, $position);
+        }
 
         return $position;
     }
@@ -186,14 +189,18 @@ class AppointmentController extends Controller
     /**
      * Reorder queue entries when a new appointment is inserted.
      */
-    private function reorderQueueEntries(int $scheduleId, string $date, int $newPosition): void
+    private function reorderQueueEntries(int $scheduleId, string $date, int $newPosition, ?int $excludeQueueEntryId = null): void
     {
-        // Get all active (non-cancelled) queue entries for this schedule and date with queue_number >= newPosition
-        QueueEntry::where('schedule_id', $scheduleId)
+        $query = QueueEntry::where('schedule_id', $scheduleId)
             ->where('date', $date)
             ->where('queue_number', '>=', $newPosition)
-            ->whereNotIn('queue_status', ['cancelled'])
-            ->increment('queue_number');
+            ->whereNotIn('queue_status', ['cancelled']);
+
+        if ($excludeQueueEntryId) {
+            $query->where('queue_entry_id', '!=', $excludeQueueEntryId);
+        }
+
+        $query->increment('queue_number');
     }
 
     /**
@@ -221,6 +228,11 @@ class AppointmentController extends Controller
             $this->cancelQueueEntry($appointment);
         }
 
+        // If appointment_time is being changed, recalculate queue position
+        if (isset($validated['appointment_time']) && $appointment->appointment_time != $validated['appointment_time']) {
+            $this->rescheduleQueueEntry($appointment, $validated['appointment_time']);
+        }
+
         $appointment->update($validated);
 
         SseEventService::publish('queue-updated', ['action' => 'appointment_updated', 'appointment_id' => $appointment->appointment_id]);
@@ -230,6 +242,54 @@ class AppointmentController extends Controller
             'message'     => 'Appointment updated successfully',
             'appointment' => $appointment,
         ]);
+    }
+
+    /**
+     * Reschedule a queue entry when appointment time changes.
+     */
+    private function rescheduleQueueEntry(Appointment $appointment, string $newTime): void
+    {
+        $queueEntry = QueueEntry::where('appointment_id', $appointment->appointment_id)->first();
+
+        if (!$queueEntry || $queueEntry->queue_status === 'cancelled') {
+            return;
+        }
+
+        DB::transaction(function () use ($appointment, $queueEntry, $newTime) {
+            // Determine new queue number based on new time
+            $newQueueNumber = $this->determineQueueNumber(
+                $appointment->schedule_id,
+                $appointment->appointment_date->format('Y-m-d'),
+                $newTime,
+                $appointment->appointment_id,
+                $queueEntry->queue_entry_id
+            );
+
+            $oldQueueNumber = $queueEntry->queue_number;
+
+            if ($newQueueNumber < $oldQueueNumber) {
+                // Moving earlier: shift entries >= newQueueNumber and < oldQueueNumber forward by 1
+                QueueEntry::where('schedule_id', $appointment->schedule_id)
+                    ->where('date', $appointment->appointment_date)
+                    ->where('queue_number', '>=', $newQueueNumber)
+                    ->where('queue_number', '<', $oldQueueNumber)
+                    ->whereNotIn('queue_status', ['cancelled'])
+                    ->where('queue_entry_id', '!=', $queueEntry->queue_entry_id)
+                    ->increment('queue_number');
+            } elseif ($newQueueNumber > $oldQueueNumber) {
+                // Moving later: shift entries > oldQueueNumber and <= newQueueNumber backward by 1
+                QueueEntry::where('schedule_id', $appointment->schedule_id)
+                    ->where('date', $appointment->appointment_date)
+                    ->where('queue_number', '>', $oldQueueNumber)
+                    ->where('queue_number', '<=', $newQueueNumber)
+                    ->whereNotIn('queue_status', ['cancelled'])
+                    ->where('queue_entry_id', '!=', $queueEntry->queue_entry_id)
+                    ->decrement('queue_number');
+            }
+
+            // Update the queue entry with new queue number
+            $queueEntry->update(['queue_number' => $newQueueNumber]);
+        });
     }
 
     /**
